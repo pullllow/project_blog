@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,5 +17,8 @@ public class BaseController {
 
     @Autowired
     HttpServletRequest req;
+
+    @Autowired
+    PostService postService;
 
 }
