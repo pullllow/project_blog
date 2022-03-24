@@ -22,7 +22,7 @@ public class MyBatisPlusConfig {
     public PaginationInterceptor paginationInterceptor() {
         PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
         //设置请求的页面大于最后页后操作， true回到首页， false继续请求 默认false
-        paginationInterceptor.setOverflow(false);
+        //paginationInterceptor.setOverflow(false);
         //设置最大单页限制数量，默认500条，-1不受限制
         //paginationInterceptor.setMaxLimit
         return paginationInterceptor;
