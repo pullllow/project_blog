@@ -22,14 +22,10 @@ public class IndexController extends BaseController {
     @RequestMapping({"", "/", "/index"})
     public String index() {
 
-        //当前页码
-        int pn = ServletRequestUtils.getIntParameter(req, "pn", 1);
-        //当前页 数据数量
-        int size = ServletRequestUtils.getIntParameter(req, "size", 2);
-        Page page = new Page(pn, size);
+
 
         //1分页信息 2分类 3用户 4置顶 5精选 6排序
-        IPage results = postService.paging(page, null, null, null, null, "created");
+        IPage results = postService.paging(getPage(), null, null, null, null, "created");
 
         req.setAttribute("pageData", results);
         req.setAttribute("currentCategoryId", 0);

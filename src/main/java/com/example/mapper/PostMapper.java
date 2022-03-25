@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author
@@ -24,4 +24,5 @@ public interface PostMapper extends BaseMapper<Post> {
     IPage<PostVo> selectPosts(Page page, @Param(Constants.WRAPPER) QueryWrapper wrapper);
 
 
+    PostVo selectOnePost(@Param(Constants.WRAPPER) QueryWrapper<Post> wrapper);
 }

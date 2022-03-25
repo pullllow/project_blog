@@ -51,5 +51,15 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         return postMapper.selectPosts(page,wrapper);
     }
 
+    /**
+     *  单个信息查询
+     * @param wrapper
+     * @return com.example.vo.PostVo
+     **/
+    @Override
+    public PostVo selectOnePost(QueryWrapper<Post> wrapper) {
+        return postMapper.selectOnePost(wrapper);
+    }
+
 
 }

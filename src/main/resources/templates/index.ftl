@@ -46,7 +46,6 @@
                         <@plisting post></@plisting>
                     </#list>
 
-
                 </ul>
 
                 <@paging pageData></@paging>

@@ -21,4 +21,5 @@ public interface PostService extends IService<Post> {
     IPage paging(Page page, Long categoryId, Long userId, Integer level, Boolean recommend, String order);
 
 
+    PostVo selectOnePost(QueryWrapper<Post> wrapper);
 }
