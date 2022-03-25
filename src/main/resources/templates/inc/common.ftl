@@ -41,8 +41,8 @@
             <a href="/user/${post.authorId}" link>
                 <cite>${post.authorName}</cite>
             </a>
-            <#--<span>${timeAgo(post.created)}</span>-->
-            <span>${post.created?string("yyyy-MM-dd hh:mm:ss")}</span>
+            <span>${timeAgo(post.created)}</span>
+            <#--<span>${post.created?string("yyyy-MM-dd hh:mm:ss")}</span>-->
 
             <span class="fly-list-nums">
                 <i class="iconfont icon-pinglun1" title="回答"></i> ${post.commentCount}
