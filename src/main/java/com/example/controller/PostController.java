@@ -15,6 +15,7 @@ public class PostController extends BaseController {
 
     @GetMapping("/post/{id:\\d*}")
     public String post(@PathVariable(name = "id") Long id) {
+        req.setAttribute("currentCategoryId",id);
         return "post/detail";
     }
 }
