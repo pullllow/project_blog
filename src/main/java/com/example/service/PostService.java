@@ -22,4 +22,8 @@ public interface PostService extends IService<Post> {
 
 
     PostVo selectOnePost(QueryWrapper<Post> wrapper);
+
+    void initWeekRank();
+
+    void incrCommentCountAndUnionForWeekRank(long postId, boolean isIncr);
 }

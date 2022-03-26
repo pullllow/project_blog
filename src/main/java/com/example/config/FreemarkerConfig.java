@@ -6,6 +6,7 @@ package com.example.config;
  *  @Version V1.0
  */
 
+import com.example.template.HotsTemplate;
 import com.example.template.PostsTemplate;
 import com.example.template.TimeAgoMethod;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,14 @@ public class FreemarkerConfig {
     @Autowired
     PostsTemplate postsTemplate;
 
+    @Autowired
+    HotsTemplate hotsTemplate;
+
     @PostConstruct
     public void setUp() {
         configuration.setSharedVariable("timeAgo", new TimeAgoMethod());
         configuration.setSharedVariable("posts", postsTemplate);
+        configuration.setSharedVariable("hots", hotsTemplate);
     }
 
 }

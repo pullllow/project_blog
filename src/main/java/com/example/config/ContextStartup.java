@@ -27,6 +27,9 @@ public class ContextStartup implements ApplicationRunner, ServletContextAware {
 
     ServletContext servletContext;
 
+    @Autowired
+    PostService postService;
+
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -35,7 +38,11 @@ public class ContextStartup implements ApplicationRunner, ServletContextAware {
         List<Category> categories = categoryService.list(new QueryWrapper<Category>()
                 .eq("status", 0)
         );
-        servletContext.setAttribute("categorys",categories);
+        servletContext.setAttribute("categories",categories);
+
+        //本周热议功能
+        postService.initWeekRank();
+
 
 
 
