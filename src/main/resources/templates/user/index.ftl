@@ -3,32 +3,8 @@
 
 <@layout "用户中心">
 <div class="layui-container fly-marginTop fly-user-main">
-  <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="user">
-    <li class="layui-nav-item">
-      <a href="/user/home.ftl">
-        <i class="layui-icon">&#xe609;</i>
-        我的主页
-      </a>
-    </li>
-    <li class="layui-nav-item layui-this">
-      <a href="/user/index.ftl">
-        <i class="layui-icon">&#xe612;</i>
-        用户中心
-      </a>
-    </li>
-    <li class="layui-nav-item">
-      <a href="/user/set.ftl">
-        <i class="layui-icon">&#xe620;</i>
-        基本设置
-      </a>
-    </li>
-    <li class="layui-nav-item">
-      <a href=/user/message.ftl">
-        <i class="layui-icon">&#xe611;</i>
-        我的消息
-      </a>
-    </li>
-  </ul>
+
+  <@centerLeft level=1></@centerLeft>
 
   <div class="site-tree-mobile layui-hide">
     <i class="layui-icon">&#xe602;</i>

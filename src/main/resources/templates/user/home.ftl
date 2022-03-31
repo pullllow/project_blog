@@ -42,10 +42,10 @@
                     <ul class="jie-row">
                         <#list posts as post>
                             <li>
-                                <#if post.recomment><span class="fly-jing">精</span></#if>
-                                <a href="/post/${post.id}" class="jie-title"> ${post.tittle}</a>
-                                <i>${timeago(post.created)}</i>
-                                <em class="layui-hide-xs">${post.viewCount}阅/${post.commendCount}答</em>
+                                <#if post.recommend><span class="fly-jing">精</span></#if>
+                                <a href="/post/${post.id}" class="jie-title"> ${post.title}</a>
+                                <i>${timeAgo(post.created)}</i>
+                                <em class="layui-hide-xs">${post.viewCount}阅/${post.commentCount}答</em>
                             </li>
                         </#list>
 
@@ -59,7 +59,7 @@
                 <div class="fly-panel">
                     <h3 class="fly-panel-title">${user.username} 最近的回答</h3>
                     <ul class="home-jieda">
-                        <#list comments as comment>
+                        <#--<#list comments as comment>
                             <li>
                                 <p>
                                     <span>${timeago(comment.created)}</span>
@@ -69,7 +69,7 @@
                                     ${comment.content}
                                 </div>
                             </li>
-                        </#list>
+                        </#list>-->
 
 
 

@@ -10,6 +10,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.common.lang.Result;
 import com.example.entity.Post;
 import com.example.entity.User;
@@ -52,6 +53,18 @@ public class UserController extends BaseController {
 
 
         return "/user/home";
+    }
+
+    @GetMapping("/user/index")
+    public Result index() {
+
+        IPage page = postService.page(getPage(), new QueryWrapper<Post>()
+                .eq("user_id",getProfileId())
+                .orderByDesc("created")
+        );
+
+
+        return Result.success(page);
     }
 
     @GetMapping("/user/set")
