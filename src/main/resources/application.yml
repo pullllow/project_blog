@@ -9,8 +9,11 @@ Spring:
   freemarker:
     cache: false
   redis:
-    host: localhost
+    host: 127.0.0.1
     port: 6379
     password:
 mybatis-plus:
     mapper-locations: classpath*:/mapper/**Mapper.xml
+file:
+  upload:
+    dir: ${user.dir}/upload

@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="/res/css/global.css">
 
     <script src="/res/layui/layui.js"></script>
+    <script src="/res/js/jquery.min.js"></script>
+
 </head>
 <body>
     <#include "/inc/common.ftl" />
@@ -24,7 +26,7 @@
 
 
 <script>
-    layui.cache.page = '';
+    // layui.cache.page = '';
     layui.cache.user = {
         username: '游客'
         ,uid: -1

@@ -38,7 +38,7 @@
                             <img src="${post.authorAvatar}" alt="${post.authorName}">
                         </a>
                         <div class="fly-detail-user">
-                            <a href="../user/home.html" class="fly-link">
+                            <a href="../user/home.ftl" class="fly-link">
                                 <cite>${post.authorName}</cite>
                                 <#-- <i class="iconfont icon-renzheng" title="认证信息：{{ rows.user.approve }}"></i>
                                  <i class="layui-badge fly-badge-vip">VIP3</i>-->

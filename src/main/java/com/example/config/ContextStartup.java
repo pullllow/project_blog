@@ -44,8 +44,6 @@ public class ContextStartup implements ApplicationRunner, ServletContextAware {
         postService.initWeekRank();
 
 
-
-
     }
 
     @Override

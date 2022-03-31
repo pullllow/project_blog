@@ -112,7 +112,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     @Override
     public void incrCommentCountAndUnionForWeekRank(long postId, boolean isIncr) {
         String currentKey = "day:rank:" + DateUtil.format(new Date(), DatePattern.PURE_DATE_FORMAT);
-        redisUtil.zIncrementScore(currentKey,postId,isIncr?1:-1);
+        redisUtil.zIncrementScore(currentKey, postId, isIncr ? 1 : -1);
 
         Post post = this.getById(postId);
 
@@ -121,14 +121,14 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         long expireTime = (7 - between) * 24 * 60 * 60;
 
         //缓存post基本信息
-        this.hashCachePostIdAndTitle(post,expireTime);
+        this.hashCachePostIdAndTitle(post, expireTime);
 
         // 重新并集
         this.zunionAndStoreLast7DayForWeekRank();
 
 
-
     }
+
 
     /**
      * 过去7天合并每日评论并集操作
@@ -166,8 +166,25 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
             redisUtil.hset(key, "post:id", post.getId(), expireTime);
             redisUtil.hset(key, "post:title", post.getTitle(), expireTime);
             redisUtil.hset(key, "post:commentCount", post.getCommentCount(), expireTime);
+            redisUtil.hset(key, "post:viewCount", post.getViewCount(), expireTime);
         }
 
+    }
+
+    @Override
+    public void putViewCount(PostVo vo) {
+        String key = "rank:post:" + vo.getId();
+        //1.从缓存中获取viewcount
+
+        Integer viewCount = (Integer)redisUtil.hget(key, "post:viewCount");
+        //2.如果没有，就从实体中获取
+        if(viewCount!=null) {
+            vo.setViewCount(viewCount+1);
+        } else {
+            vo.setViewCount(vo.getViewCount()+1);
+        }
+        //3.同步到缓存
+        redisUtil.hset(key,"post:viewCount",vo.getViewCount());
     }
 
 
