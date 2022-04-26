@@ -77,7 +77,7 @@
             </a>
         </li>
         <li class="layui-nav-item  <#if level==3>layui-this</#if>">
-            <a href=/user/message">
+            <a href="/user/mess">
                 <i class="layui-icon">&#xe611;</i>
                 我的消息
             </a>

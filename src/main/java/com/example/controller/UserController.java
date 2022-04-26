@@ -14,19 +14,18 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.common.lang.Result;
 import com.example.entity.Post;
 import com.example.entity.User;
+import com.example.entity.UserMessage;
 import com.example.shiro.AccountProfile;
 import com.example.util.UploadUtil;
+import com.example.vo.UserMessageVo;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +34,22 @@ public class UserController extends BaseController {
 
     @Autowired
     UploadUtil uploadUtil;
+
+    @GetMapping("/user/{id:\\d*}")
+    public String userHome(@PathVariable(name = "id") Long id) {
+        User user = userService.getById(id);
+
+        //获取30天内发表的
+        List<Post> posts = postService.list(new QueryWrapper<Post>()
+                .eq("user_id", id)
+                .gt("created", DateUtil.offsetDay(new Date(), -30))
+                .orderByDesc("created")
+        );
+
+        req.setAttribute("user", user);
+        req.setAttribute("posts", posts);
+        return "/user/home";
+    }
 
 
     @GetMapping("/user/home")
@@ -55,17 +70,33 @@ public class UserController extends BaseController {
         return "/user/home";
     }
 
-    @GetMapping("/user/index")
-    public Result index() {
+    @ResponseBody
+    @PostMapping("/user/repass")
+    public Result repass(String nowpass, String pass, String repass) {
+        if (!pass.equals(repass)) {
+            return Result.fail("两次密码不相同");
+        }
 
-        IPage page = postService.page(getPage(), new QueryWrapper<Post>()
-                .eq("user_id",getProfileId())
-                .orderByDesc("created")
-        );
+        User user = userService.getById(getProfileId());
+        String nowPassMd5 = SecureUtil.md5(nowpass);
+        if (!nowPassMd5.equals(user.getPassword())) {
+            return Result.fail("密码不正确");
+        }
 
+        user.setPassword(SecureUtil.md5(pass));
+        userService.updateById(user);
 
-        return Result.success(page);
+        return Result.success().action("/user/set#pass");
+
     }
+
+
+
+    @GetMapping("/user/index")
+    public String index() {
+        return "/user/index";
+    }
+
 
     @GetMapping("/user/set")
     public String set() {
@@ -78,10 +109,32 @@ public class UserController extends BaseController {
 
 
     @ResponseBody
+    @GetMapping("/user/public")
+    public Result userPublic() {
+        IPage page = postService.page(getPage(), new QueryWrapper<Post>()
+                .eq("user_id", getProfileId())
+                .orderByDesc("created"));
+
+        return Result.success(page);
+    }
+
+    @ResponseBody
+    @GetMapping("/user/collection")
+    public Result collection() {
+
+        IPage page = postService.page(getPage(), new QueryWrapper<Post>()
+                .inSql("id", "SELECT post_id FROM user_collection where user_id=" + getProfileId())
+        );
+
+        return Result.success(page);
+    }
+
+
+    @ResponseBody
     @PostMapping("/user/set")
     public Result doSet(User user) {
 
-        if(StrUtil.isNotBlank(user.getAvatar())) {
+        if (StrUtil.isNotBlank(user.getAvatar())) {
             User temp = userService.getById(getProfileId());
             temp.setAvatar(user.getAvatar());
             userService.updateById(temp);
@@ -130,25 +183,49 @@ public class UserController extends BaseController {
     }
 
 
+    @GetMapping("/user/mess")
+    public String message() {
+
+        IPage<UserMessageVo> page = userMessageService.paging(getPage(), new QueryWrapper<UserMessage>()
+                .eq("to_user_id", getProfileId())
+                .orderByAsc("status")
+                .orderByDesc("created")
+        );
+
+        //将所有消息标记为已读
+        List<Long> ids = new ArrayList<>();
+        for (UserMessageVo messageVo : page.getRecords()) {
+            if(messageVo.getStatus()==0) {
+                ids.add(messageVo.getId());
+            }
+        }
+
+        //批量将消息修改为已读
+
+        userMessageService.updateToRead(ids);
+
+
+        req.setAttribute("pageData",page);
+
+        return "/user/mess";
+    }
+
+
 
     @ResponseBody
-    @PostMapping("/user/repass")
-    public Result repass(String nowpass, String pass, String repass) {
-        if(!pass.equals(repass)) {
-            return Result.fail("两次密码不相同");
-        }
+    @PostMapping("/mess/remove")
+    public Result remove(Long id,
+                         @RequestParam(defaultValue = "false") Boolean all) {
 
-        User user = userService.getById(getProfileId());
-        String nowPassMd5 = SecureUtil.md5(nowpass);
-        if(!nowPassMd5.equals(user.getPassword())) {
-            return Result.fail("密码不正确");
-        }
+        boolean remove = userMessageService.remove(new QueryWrapper<UserMessage>()
+                .eq("to_user_id", getProfileId())
+                .eq(!all, "id", id)
+        );
 
-        user.setPassword(SecureUtil.md5(pass));
-        userService.updateById(user);
-
-        return Result.success().action("/user/set#pass");
-
+        return remove? Result.success():Result.fail("删除失败");
     }
+
+
+
 
 }

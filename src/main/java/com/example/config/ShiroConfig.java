@@ -46,7 +46,7 @@ public class ShiroConfig {
         filterFactoryBean.setUnauthorizedUrl("/error/403");
 
         Map<String, String> hashMap = new LinkedHashMap<>();
-        hashMap.put("/user/home","authc");
+        //hashMap.put("/user/home","authc");
         hashMap.put("/user/set","authc");
         hashMap.put("/user/upload","authc");
         hashMap.put("/login","anon");
