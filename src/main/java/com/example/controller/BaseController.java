@@ -41,6 +41,8 @@ public class BaseController {
     @Autowired
     UserCollectionService userCollectionService;
 
+    @Autowired
+    WebSocketService webSocketService;
 
 
     public Page getPage(){

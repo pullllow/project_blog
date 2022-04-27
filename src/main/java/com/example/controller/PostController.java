@@ -191,9 +191,11 @@ public class PostController extends BaseController {
             message.setStatus(0);
 
             userMessageService.save(message);
+            webSocketService.sendMessCountToUser(message.getToUserId());
 
         }
 
+        // 通知@的人
         if (content.startsWith("@")) {
             String username = content.substring(1, content.indexOf(" "));
 
@@ -210,7 +212,9 @@ public class PostController extends BaseController {
                 message.setStatus(0);
                 userMessageService.save(message);
 
+
                 // 即时通知被@的用户
+                //webSocketService.sendMessCountToUser(message.getToUserId());
             }
 
         }

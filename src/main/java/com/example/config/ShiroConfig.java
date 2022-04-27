@@ -43,7 +43,7 @@ public class ShiroConfig {
         filterFactoryBean.setSecurityManager(securityManager);
         // 配置登录的url和登录成功的url
         filterFactoryBean.setLoginUrl("/login");
-        filterFactoryBean.setSuccessUrl("/user/center");
+        filterFactoryBean.setSuccessUrl("/user/home");
         // 配置未授权跳转页面
         filterFactoryBean.setUnauthorizedUrl("/error/403");
 
