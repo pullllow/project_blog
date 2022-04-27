@@ -7,6 +7,7 @@ package com.example.controller;
  */
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class UserController extends BaseController {
@@ -224,6 +226,23 @@ public class UserController extends BaseController {
 
         return remove? Result.success():Result.fail("删除失败");
     }
+
+
+    @ResponseBody
+    @PostMapping("/mess/nums")
+    public Map msgNum() {
+        int count = userMessageService.count(new QueryWrapper<UserMessage>()
+                .eq("to_user_id",getProfileId())
+                .eq("status",0)
+        );
+
+        return MapUtil.builder("status",0).put("count",count).build();
+
+    }
+
+
+
+
 
 
 

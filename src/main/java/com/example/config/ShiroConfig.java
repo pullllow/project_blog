@@ -49,21 +49,28 @@ public class ShiroConfig {
 
         filterFactoryBean.setFilters(MapUtil.of("auth", authFilter()));
 
+
         Map<String, String> hashMap = new LinkedHashMap<>();
         //hashMap.put("/user/home","authc");
-        hashMap.put("/user/set","auth");
-        hashMap.put("/user/upload","auth");
-        hashMap.put("/user/index","auth");
-        hashMap.put("/user/collection","auth");
-        hashMap.put("/user/mess","auth");
+        hashMap.put("/user/set", "auth");
+        hashMap.put("/user/upload", "auth");
+        hashMap.put("/user/index", "auth");
+        hashMap.put("/user/collection", "auth");
+        hashMap.put("/user/mess", "auth");
+
+        hashMap.put("/mess/remove", "auth");
 
 
-        hashMap.put("/post/edit","auth");
+        hashMap.put("/post/edit", "auth");
+        hashMap.put("/post/submit", "auth");
+        hashMap.put("/post/delete", "auth");
+        hashMap.put("/post/reply/", "auth");
 
+        hashMap.put("/collection/find", "auth");
+        hashMap.put("/collection/add", "auth");
+        hashMap.put("/collection/remove", "auth");
 
-        hashMap.put("/login","anon");
-
-
+        hashMap.put("/login", "anon");
 
 
         filterFactoryBean.setFilterChainDefinitionMap(hashMap);
@@ -71,6 +78,7 @@ public class ShiroConfig {
         return filterFactoryBean;
 
     }
+
 
     @Bean
     public AuthFilter authFilter() {

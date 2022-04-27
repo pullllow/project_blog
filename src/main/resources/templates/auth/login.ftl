@@ -35,7 +35,7 @@
                   &lt;#&ndash;<span style="color: #c00;">{{d.vercode}}</span>&ndash;&gt;
                   <img id="kaptcha" src="/kaptcha.jpg">
                 </div>-->
-              </div>
+
               <div class="layui-form-item">
                 <button class="layui-btn" lay-filter="*" lay-submit>立即登录</button>
                 <span style="padding-left:20px;">

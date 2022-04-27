@@ -41,6 +41,8 @@ public class BaseController {
     @Autowired
     UserCollectionService userCollectionService;
 
+
+
     public Page getPage(){
         //当前页码
         int pn = ServletRequestUtils.getIntParameter(req, "pn", 1);

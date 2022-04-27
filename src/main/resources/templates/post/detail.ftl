@@ -52,8 +52,7 @@
                         </div>
                         <div class="detail-hits" id="LAY_jieAdmin" data-id="${post.id}">
                             <span style="padding-right: 10px; color: #FF7200">悬赏：60飞吻</span>
-                            <span class="layui-btn layui-btn-xs jie-admin" type="edit"><a
-                                        href="/post/edit?id=${post.id}">编辑此贴</a></span>
+                            <span class="layui-btn layui-btn-xs jie-admin" type="edit"><a href="/post/edit?id=${post.id}">编辑此贴</a></span>
                         </div>
                     </div>
                     <div class="detail-body photos">

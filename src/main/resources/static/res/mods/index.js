@@ -280,7 +280,7 @@ layui.define(['layer', 'laytpl', 'form', 'element', 'upload', 'util'], function(
     ,newmsg: function(){
       var elemUser = $('.fly-nav-user');
       if(layui.cache.user.uid !== -1 && elemUser[0]){
-        fly.json('/message/nums/', {
+        fly.json('/mess/nums/', {
           _: new Date().getTime()
         }, function(res){
           if(res.status === 0 && res.count > 0){
@@ -289,7 +289,7 @@ layui.define(['layer', 'laytpl', 'form', 'element', 'upload', 'util'], function(
             msg.on('click', function(){
               fly.json('/message/read', {}, function(res){
                 if(res.status === 0){
-                  location.href = '/user/message/';
+                  location.href = '/user/mess/';
                 }
               });
             });
