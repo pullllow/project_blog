@@ -1,10 +1,8 @@
 package com.example.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.service.CommentService;
-import com.example.service.PostService;
-import com.example.service.UserMessageService;
-import com.example.service.UserService;
+import com.example.entity.UserCollection;
+import com.example.service.*;
 import com.example.shiro.AccountProfile;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +34,12 @@ public class BaseController {
 
     @Autowired
     UserMessageService userMessageService;
+
+    @Autowired
+    CategoryService categoryService;
+
+    @Autowired
+    UserCollectionService userCollectionService;
 
     public Page getPage(){
         //当前页码

@@ -76,11 +76,11 @@ layui.define('fly', function(exports){
     del: function(div){
       layer.confirm('确认删除该求解么？', function(index){
         layer.close(index);
-        fly.json('/api/jie-delete/', {
+        fly.json('/post/delete', {
           id: div.data('id')
         }, function(res){
           if(res.status === 0){
-            location.href = '/jie/';
+            location.href = '/user/home';
           } else {
             layer.msg(res.msg);
           }
@@ -88,7 +88,7 @@ layui.define('fly', function(exports){
       });
     }
     
-    //设置置顶、状态
+    //设置置顶、加精
     ,set: function(div){
       var othis = $(this);
       fly.json('/api/jie-set/', {

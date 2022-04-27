@@ -8,6 +8,8 @@ Spring:
     password: 123456
   freemarker:
     cache: false
+    settings:
+      classic_compatible: true
   redis:
     host: localhost
     port: 6379
