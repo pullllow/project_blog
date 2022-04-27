@@ -91,7 +91,7 @@ layui.define('fly', function(exports){
     //设置置顶、加精
     ,set: function(div){
       var othis = $(this);
-      fly.json('/api/jie-set/', {
+      fly.json('/post/set/', {
         id: div.data('id')
         ,rank: othis.attr('rank')
         ,field: othis.attr('field')
@@ -206,7 +206,7 @@ layui.define('fly', function(exports){
     ,del: function(li){ //删除
       layer.confirm('确认删除该回答么？', function(index){
         layer.close(index);
-        fly.json('/api/jieda-delete/', {
+        fly.json('/post/jieda-delete/', {
           id: li.data('id')
         }, function(res){
           if(res.status === 0){

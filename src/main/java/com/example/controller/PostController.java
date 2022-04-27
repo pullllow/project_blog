@@ -4,7 +4,9 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.common.lang.Result;
+import com.example.entity.Comment;
 import com.example.entity.Post;
+import com.example.entity.UserMessage;
 import com.example.util.ValidationUtil;
 import com.example.vo.CommentVo;
 import com.example.vo.PostVo;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
+import java.sql.ResultSet;
 import java.util.Date;
 
 @Controller
@@ -135,6 +138,97 @@ public class PostController extends BaseController {
 
         return Result.success().action("/user/home");
     }
+
+
+    @ResponseBody
+    @PostMapping("/post/reply")
+    public Result reply(Long postId, String content) {
+
+        Assert.notNull(postId,"找不到对应的博客");
+        Assert.hasLength(content,"评论内容不能为空");
+
+        Post post = postService.getById(postId);
+        Assert.isTrue(post != null, "该文章已被删除");
+
+        Date date = new Date();
+
+        Comment comment = new Comment();
+
+        comment.setPostId(postId);
+        comment.setContent(content);
+
+        comment.setUserId(getProfileId());
+
+        comment.setCreated(date);
+        comment.setModified(date);
+
+        comment.setLevel(0);
+        comment.setVoteDown(0);
+        comment.setVoteUp(0);
+
+        commentService.save(comment);
+
+        //博客评论数量+1
+        post.setCommentCount(post.getCommentCount()+1);
+        postService.updateById(post);
+
+        //本周热议数量+1
+
+        postService.incrCommentCountAndUnionForWeekRank(postId,true);
+
+        //通知作者，博客被评论 (自己评论自己不通知)
+        if(comment.getUserId()!=post.getUserId()) {
+            UserMessage message = new UserMessage();
+
+            message.setPostId(postId);
+            ///
+            message.setCommentId(comment.getId());
+
+            message.setFromUserId(getProfileId());
+            message.setToUserId(post.getUserId());
+
+            message.setType(1);
+            message.setContent(content);
+            message.setCreated(date);
+            message.setModified(date);
+
+            message.setStatus(0);
+
+            userMessageService.save(message);
+
+        }
+
+
+        return Result.success().action("/post/"+postId);
+    }
+
+    @ResponseBody
+    @Transactional
+    @PostMapping("/post/jieda-delete/")
+    public Result reply(Long id) {
+
+        Assert.notNull(id, "评论id不能为空！");
+
+        Comment comment = commentService.getById(id);
+
+        Assert.notNull(comment, "找不到对应评论！");
+
+        if(comment.getUserId().longValue() != getProfileId().longValue()) {
+            return Result.fail("不是你发表的评论！");
+        }
+        commentService.removeById(id);
+
+        // 评论数量减一
+        Post post = postService.getById(comment.getPostId());
+        post.setCommentCount(post.getCommentCount() - 1);
+        postService.saveOrUpdate(post);
+
+        //评论数量减一
+        postService.incrCommentCountAndUnionForWeekRank(comment.getPostId(), false);
+
+        return Result.success(null);
+    }
+
 
 
 }

@@ -29,14 +29,15 @@
 
                     <li data-id="${mess.id}">
                         <blockquote class="layui-elem-quote">
+
                             <#if mess.type == 0>
                                 系统消息：${mess.content}
                             </#if>
                             <#if mess.type == 1>
-                                <a href="/user/${mess.fromUserId}" target="_blank" ><cite>${mess.fromUserName}</cite></a>评论了你的文章<a href="/post/${mess.postId}" target="_blank" ><cite>${mess.postTitle}</cite></a>，内容是 (${mess.content})
+                                <a href="/user/${mess.fromUserId}" target="_blank" ><cite>${mess.fromUserName}</cite></a>评论了你的文章<a href="/post/${mess.postId}" target="_blank" ><cite>${mess.postTitle}</cite></a>，内容是: <div class="detail-body jieda-body photos">${mess.content}</div>
                             </#if>
                             <#if mess.type == 2>
-                                <a href="/user/${mess.fromUserId}" target="_blank" ><cite>${mess.fromUserName}</cite></a> 回复了你的评论 (${mess.content})，文章是<a href="/post/${mess.postId}" target="_blank"><cite>${mess.postTitle}</cite></a>
+                                <a href="/user/${mess.fromUserId}" target="_blank" ><cite>${mess.fromUserName}</cite></a> 回复了你的评论  <div class="detail-body jieda-body photos">${mess.content}</div>
                             </#if>
 
                         </blockquote>
@@ -56,6 +57,17 @@
 
 <script>
 layui.cache.page = 'user';
+
+$(function () {
+    layui.use(['fly', 'face'], function () {
+        var $ = layui.$, fly = layui.fly;
+        //如果你是采用模版自带的编辑器，你需要开启以下语句来解析。
+        $('.detail-body').each(function () {
+            var othis = $(this), html = othis.html();
+            othis.html(fly.content(html));
+        });
+    });
+});
 
 </script>
 

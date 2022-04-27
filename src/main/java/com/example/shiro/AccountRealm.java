@@ -7,6 +7,7 @@ package com.example.shiro;
  */
 
 import com.example.service.UserService;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -32,6 +33,9 @@ public class AccountRealm extends AuthorizingRealm {
         UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) token;
 
         AccountProfile profile = userService.login(usernamePasswordToken.getUsername(),String.valueOf(usernamePasswordToken.getPassword()));
+
+        //将用户登录信息传到前端
+        SecurityUtils.getSubject().getSession().setAttribute("profile", profile);
 
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(profile,token.getCredentials(),getName());
 

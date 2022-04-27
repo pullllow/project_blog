@@ -20,7 +20,12 @@
                         <#if post.recommend><span class="layui-badge layui-bg-red">精帖</span></#if>
 
                         <div class="fly-admin-box" data-id="${post.id}">
-                            <span class="layui-btn layui-btn-xs jie-admin" type="del">删除</span>
+
+                            <#if post.userId == profile.id>
+                                <#--发布者删除-->
+                                <span class="layui-btn layui-btn-xs jie-admin" type="del">删除</span>
+                            </#if>
+
 
                             <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="1">置顶</span>
                             <!-- <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="0" style="background-color:#ccc;">取消置顶</span> -->
@@ -94,7 +99,7 @@
                                     <#--<i class="iconfont icon-caina" title="最佳答案"></i>-->
                                 </div>
                                 <div class="detail-body jieda-body photos">
-                                    <p>${comment.content}</p>
+                                    ${comment.content}
                                 </div>
                                 <div class="jieda-reply">
               <span class="jieda-zan zanok" type="zan">
@@ -106,7 +111,6 @@
                 回复
               </span>
                                     <div class="jieda-admin">
-                                        <span type="edit">编辑</span>
                                         <span type="del">删除</span>
                                         <!-- <span class="jieda-accept" type="accept">采纳</span> -->
                                     </div>
@@ -122,7 +126,7 @@
                     <@paging pageData></@paging>
 
                     <div class="layui-form layui-form-pane">
-                        <form action="/jie/reply/" method="post">
+                        <form action="/post/reply/" method="post">
                             <div class="layui-form-item layui-form-text">
                                 <a name="comment"></a>
                                 <div class="layui-input-block">
@@ -132,7 +136,7 @@
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <input type="hidden" name="jid" value="${post.id}">
+                                <input type="hidden" name="postId" value="${post.id}">
                                 <button class="layui-btn" lay-filter="*" lay-submit>提交回复</button>
                             </div>
                         </form>
@@ -146,6 +150,21 @@
 
     <script>
         layui.cache.page = 'jie';
+
+
+        $(function () {
+            layui.use(['fly', 'face'], function () {
+                var $ = layui.$, fly = layui.fly;
+                //如果你是采用模版自带的编辑器，你需要开启以下语句来解析。
+                $('.detail-body').each(function () {
+                    var othis = $(this), html = othis.html();
+                    othis.html(fly.content(html));
+                });
+            });
+        });
+
+
+
 
     </script>
 
