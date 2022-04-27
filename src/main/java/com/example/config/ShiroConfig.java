@@ -1,6 +1,8 @@
 package com.example.config;
 
+import cn.hutool.core.map.MapUtil;
 import com.example.shiro.AccountRealm;
+import com.example.shiro.AuthFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
@@ -45,16 +47,18 @@ public class ShiroConfig {
         // 配置未授权跳转页面
         filterFactoryBean.setUnauthorizedUrl("/error/403");
 
+        filterFactoryBean.setFilters(MapUtil.of("auth", authFilter()));
+
         Map<String, String> hashMap = new LinkedHashMap<>();
         //hashMap.put("/user/home","authc");
-        hashMap.put("/user/set","authc");
-        hashMap.put("/user/upload","authc");
-        hashMap.put("/user/index","authc");
-        hashMap.put("/user/collection","authc");
-        hashMap.put("/user/mess","authc");
+        hashMap.put("/user/set","auth");
+        hashMap.put("/user/upload","auth");
+        hashMap.put("/user/index","auth");
+        hashMap.put("/user/collection","auth");
+        hashMap.put("/user/mess","auth");
 
 
-        hashMap.put("/post/edit","authc");
+        hashMap.put("/post/edit","auth");
 
 
         hashMap.put("/login","anon");
@@ -66,5 +70,10 @@ public class ShiroConfig {
 
         return filterFactoryBean;
 
+    }
+
+    @Bean
+    public AuthFilter authFilter() {
+        return new AuthFilter();
     }
 }
