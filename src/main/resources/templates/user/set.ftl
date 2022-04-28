@@ -23,6 +23,11 @@
                     <li lay-id="avatar">头像</li>
                     <li lay-id="pass">密码</li>
                     <li lay-id="bind">帐号绑定</li>
+
+                    <@shiro.hasRole name="admin">
+                        <li lay-id="es">同步ES</li>
+                    </@shiro.hasRole>
+
                 </ul>
                 <div class="layui-tab-content" style="padding: 20px 0;">
                     <div class="layui-form layui-form-pane layui-tab-item layui-show">
@@ -45,8 +50,10 @@
                                 </div>
                                 <div class="layui-inline">
                                     <div class="layui-input-inline">
-                                        <input type="radio" name="sex" value="0" <#if user.gender=='0'>checked</#if> title="男">
-                                        <input type="radio" name="sex" value="1" <#if user.gender=='1'>checked</#if> title="女">
+                                        <input type="radio" name="sex" value="0" <#if user.gender=='0'>checked</#if>
+                                               title="男">
+                                        <input type="radio" name="sex" value="1" <#if user.gender=='1'>checked</#if>
+                                               title="女">
                                     </div>
                                 </div>
                             </div>
@@ -67,7 +74,9 @@
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <button class="layui-btn" key="set-mine" lay-filter="*" lay-submit alert="true" reload="true">确认修改</button>
+                                <button class="layui-btn" key="set-mine" lay-filter="*" lay-submit alert="true"
+                                        reload="true">确认修改
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -76,7 +85,7 @@
                         <div class="layui-form-item">
                             <div class="avatar-add">
                                 <p>建议尺寸168*168，支持jpg、png、gif，最大不能超过50KB</p>
-                                    <button type="button" class="layui-btn upload-img">
+                                <button type="button" class="layui-btn upload-img">
                                     <i class="layui-icon">&#xe67c;</i>上传头像
                                 </button>
                                 <img src="<@shiro.principal property="avatar"/>">
@@ -110,7 +119,9 @@
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <button class="layui-btn" key="set-mine" lay-filter="*" lay-submit alert="true" reload="true">确认修改</button>
+                                <button class="layui-btn" key="set-mine" lay-filter="*" lay-submit alert="true"
+                                        reload="true">确认修改
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -136,6 +147,16 @@
                             </li>
                         </ul>
                     </div>
+
+                    <@shiro.hasRole name="admin">
+                        <div class="layui-form layui-form-pane layui-tab-item">
+                            <form action="/admin/initEsData" method="post">
+                                <button class="layui-btn" key="set-mine" lay-filter="*" lay-submit alert="true">同步ES数据
+                                </button>
+                            </form>
+                        </div>
+                    </@shiro.hasRole>
+
                 </div>
 
             </div>

@@ -22,22 +22,21 @@ import org.springframework.stereotype.Service;
 public class WebSocketServiceImpl implements WebSocketService {
 
     @Autowired
-    SimpMessagingTemplate messagingTemplate;
+    UserMessageService messageService;
 
     @Autowired
-    UserMessageService userMessageService;
-
+    SimpMessagingTemplate messagingTemplate;
 
     @Async
     @Override
-    public void sendMessCountToUser(Long userId) {
-
-        int count = userMessageService.count(new QueryWrapper<UserMessage>()
-                .eq("status",0)
-                .eq("to_user_id",userId)
+    public void sendMessCountToUser(Long toUserId) {
+        int count = messageService.count(new QueryWrapper<UserMessage>()
+                .eq("to_user_id", toUserId)
+                .eq("status", "0")
         );
-        // websocket通知 (/user/{userId}}/messCount)
-        this.messagingTemplate.convertAndSendToUser(userId.toString(),"/messCount",count);
-        log.info("WebSocket发送消息成功-------->用户：{}，数量:{}",userId,count);
+
+        // websocket通知 (/user/20/messCount)
+        messagingTemplate.convertAndSendToUser(toUserId.toString(), "/messCount", count);
+        log.info("WebSocket发送消息成功-------->用户：{}，数量:{}", toUserId, count);
     }
 }

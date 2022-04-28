@@ -27,6 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      * @return void
      *
      **/
+    @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/websocket")
                 .withSockJS();
@@ -41,8 +42,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     * @return void
     *
     **/
+   @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/use/","/topic"); //推送消息前缀
+        registry.enableSimpleBroker("/user/","/topic/"); //推送消息前缀
         registry.setApplicationDestinationPrefixes("/app");
 
     }

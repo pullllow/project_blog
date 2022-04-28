@@ -32,4 +32,17 @@ public class IndexController extends BaseController {
         return "index";
     }
 
+
+    @RequestMapping("/search")
+    public String search(String keyword) {
+
+        IPage pageData = searchService.search(getPage(), keyword);
+
+        req.setAttribute("keyword",keyword);
+        req.setAttribute("pageData",pageData);
+
+
+        return "search";
+    }
+
 }

@@ -55,22 +55,25 @@ public class ShiroConfig {
         hashMap.put("/user/set", "auth");
         hashMap.put("/user/upload", "auth");
         hashMap.put("/user/index", "auth");
+        hashMap.put("/user/public","auth");
         hashMap.put("/user/collection", "auth");
         hashMap.put("/user/mess", "auth");
 
         hashMap.put("/mess/remove", "auth");
-
+        hashMap.put("/mess/nums", "auth");
 
         hashMap.put("/post/edit", "auth");
         hashMap.put("/post/submit", "auth");
         hashMap.put("/post/delete", "auth");
         hashMap.put("/post/reply/", "auth");
 
-        hashMap.put("/collection/find", "auth");
-        hashMap.put("/collection/add", "auth");
-        hashMap.put("/collection/remove", "auth");
+        hashMap.put("/collection/find/", "auth");
+        hashMap.put("/collection/add/", "auth");
+        hashMap.put("/collection/remove/", "auth");
 
         hashMap.put("/login", "anon");
+        hashMap.put("/websocket", "anon");
+        //hashMap.put("/res/**", "anon");
 
 
         filterFactoryBean.setFilterChainDefinitionMap(hashMap);

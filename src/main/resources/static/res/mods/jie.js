@@ -91,7 +91,7 @@ layui.define('fly', function(exports){
     //设置置顶、加精
     ,set: function(div){
       var othis = $(this);
-      fly.json('/post/set/', {
+      fly.json('/admin/set', {
         id: div.data('id')
         ,rank: othis.attr('rank')
         ,field: othis.attr('field')

@@ -12,8 +12,9 @@
 
         <script src="/res/layui/layui.js"></script>
         <script src="/res/js/jquery.min.js"></script>
-        <script src="/res/js/sockjs.js"></script>
+
         <script src="/res/js/stomp.js"></script>
+        <script src="/res/js/sockjs.js"></script>
 
 
     </head>
@@ -50,7 +51,7 @@
             var elemUser = $('.fly-nav-user');
             elemUser.append(msg);
             msg.on('click', function () {
-                location.href = "/user/mess/";
+                location.href = "/user/mess";
             });
             layer.tips('你有 ' + count + ' 条未读消息', msg, {
                 tips: 3

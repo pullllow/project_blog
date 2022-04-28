@@ -4,7 +4,9 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.common.lang.Result;
+import com.example.config.RabbitMqConfig;
 import com.example.entity.*;
+import com.example.search.common.PostMqIndexMessage;
 import com.example.util.ValidationUtil;
 import com.example.vo.CommentVo;
 import com.example.vo.PostVo;
@@ -102,6 +104,10 @@ public class PostController extends BaseController {
             post.setVoteDown(0);
             post.setVoteUp(0);
 
+
+
+
+
         } else {
             //编辑博客
             Post tempPost = postService.getById(post.getId());
@@ -111,6 +117,9 @@ public class PostController extends BaseController {
 
         postService.saveOrUpdate(post);
 
+        // 通知消息给mq，告知更新或添加
+        amqpTemplate.convertAndSend(RabbitMqConfig.ES_EXCHANGE, RabbitMqConfig.ES_BIND_KEY,
+                new PostMqIndexMessage(post.getId(), PostMqIndexMessage.CREATE_OR_UPDATE));
 
         return Result.success("发表成功").action("/post/" + post.getId());
     }
@@ -130,6 +139,10 @@ public class PostController extends BaseController {
         //删除相关消息、收藏等
         userMessageService.removeByMap(MapUtil.of("post_id", id));
         userCollectionService.removeByMap(MapUtil.of("post_id", id));
+
+        // 通知消息给mq，告知删除
+        amqpTemplate.convertAndSend(RabbitMqConfig.ES_EXCHANGE, RabbitMqConfig.ES_BIND_KEY,
+                new PostMqIndexMessage(post.getId(), PostMqIndexMessage.REMOVE));
 
 
         return Result.success().action("/user/home");

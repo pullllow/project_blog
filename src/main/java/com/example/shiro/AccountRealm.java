@@ -10,6 +10,7 @@ import com.example.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,16 @@ public class AccountRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
+        AccountProfile profile = (AccountProfile) principalCollection.getPrimaryPrincipal();
+
+        // 给id为6的admin赋予admin角色
+        if(profile.getId() == 6) {
+            SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+            info.addRole("admin");
+            return info;
+        }
+
+
         return null;
     }
 
