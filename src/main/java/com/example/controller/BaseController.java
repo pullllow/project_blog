@@ -51,6 +51,9 @@ public class BaseController {
     @Autowired
     AmqpTemplate amqpTemplate;
 
+    @Autowired
+    ChatService chatService;
+
     public Page getPage(){
         //当前页码
         int pn = ServletRequestUtils.getIntParameter(req, "pn", 1);

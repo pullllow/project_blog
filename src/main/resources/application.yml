@@ -20,9 +20,18 @@ Spring:
       cluster-nodes: localhost:9300
       repositories:
         enabled: true
-
+  rabbitmq:
+    username: guest
+    password: guest
+    host: localhost
+    port: 5672
 mybatis-plus:
     mapper-locations: classpath*:/mapper/**Mapper.xml
 file:
   upload:
     dir: ${user.dir}/upload
+im:
+  server:
+    ip: localhost
+    port: 9326
+
