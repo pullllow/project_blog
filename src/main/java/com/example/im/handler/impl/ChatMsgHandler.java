@@ -9,6 +9,8 @@ import com.example.im.message.ChatOutMsg;
 import com.example.im.vo.ImMsg;
 import com.example.im.vo.ImTo;
 import com.example.im.vo.ImUser;
+import com.example.service.ChatService;
+import com.example.util.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.tio.core.ChannelContext;
 import org.tio.core.Tio;
@@ -63,8 +65,9 @@ public class ChatMsgHandler implements MsgHandler {
 
         Tio.sendToGroup(channelContext.getGroupContext(),Consts.IM_GROUP_NAME,wsResponse,filter);
 
-
-
+        //保存群聊信息
+        ChatService chatService = (ChatService) SpringUtil.getBean("chatService");
+        chatService.setGroupHistoryMsg(imMsg);
 
     }
 }

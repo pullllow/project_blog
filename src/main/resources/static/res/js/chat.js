@@ -15,11 +15,13 @@ layui.use('layim', function (layim) {
 
     layim.config({
         brief: true //是否简洁模式 true 不显示主面板
+        ,voice: false
+        ,chatLog: layui.cache.dir + 'css/modules/layim/html/chatlog.html'
     });
 
     var $ = layui.jquery;
 
-    var tioWs = new tio.ws($,layim);
+    var tioWs = new tio.ws($, layim);
 
 
     //获取个人、群聊信息并打开聊天窗口
@@ -30,9 +32,7 @@ layui.use('layim', function (layim) {
 
 
     //历史聊天信息回显
-
-
-
+    tioWs.initHistoryMsg();
 
     // 接受消息
 

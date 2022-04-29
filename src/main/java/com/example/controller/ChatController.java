@@ -51,9 +51,7 @@ public class ChatController extends BaseController{
     @GetMapping("/getGroupHistoryMsg")
     public Result getGroupHistoryMsg() {
         List<Object> messages = chatService.getGroupHistoryMsg(20);
-
         return Result.success(messages);
-
     }
 
 }

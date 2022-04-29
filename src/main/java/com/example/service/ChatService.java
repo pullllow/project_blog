@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.im.vo.ImMsg;
 import com.example.im.vo.ImUser;
 
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.List;
 
 public interface ChatService {
     ImUser getCurrentUser();
+
+    void setGroupHistoryMsg(ImMsg imMsg);
 
     List<Object> getGroupHistoryMsg(int count);
 }
