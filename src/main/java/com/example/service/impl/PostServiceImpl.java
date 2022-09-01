@@ -6,6 +6,7 @@ import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.bussniess.post.delete.DeleteThread;
 import com.example.entity.Post;
 import com.example.mapper.PostMapper;
 import com.example.service.PostService;
@@ -13,11 +14,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.util.RedisUtil;
 import com.example.vo.PostVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * <p>
@@ -175,8 +179,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     public void putViewCount(PostVo vo) {
         String key = "rank:post:" + vo.getId();
         //1.从缓存中获取viewcount
-
         Integer viewCount = (Integer)redisUtil.hget(key, "post:viewCount");
+
         //2.如果没有，就从实体中获取
         if(viewCount!=null) {
             vo.setViewCount(viewCount+1);

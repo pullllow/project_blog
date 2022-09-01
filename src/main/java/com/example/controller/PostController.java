@@ -3,14 +3,22 @@ package com.example.controller;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.example.bussniess.post.delete.DeleteThread;
+import com.example.bussniess.post.reply.ReplyThread;
 import com.example.common.lang.Result;
 import com.example.config.RabbitMqConfig;
 import com.example.entity.*;
 import com.example.search.common.PostMqIndexMessage;
+import com.example.service.RedisLockService;
+import com.example.util.RedisUtil;
 import com.example.util.ValidationUtil;
 import com.example.vo.CommentVo;
 import com.example.vo.PostVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -23,9 +31,27 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.validation.Valid;
 import java.sql.ResultSet;
 import java.util.Date;
+import java.util.concurrent.Future;
 
 @Controller
+@Slf4j
 public class PostController extends BaseController {
+
+
+    @Autowired
+    @Qualifier("deleteThreadPool")
+    ThreadPoolTaskExecutor deleteThreadPool;
+
+    @Autowired
+    RedisLockService redisLockService;
+
+    @Autowired
+    RedisUtil redisUtil;
+
+
+    @Autowired
+    @Qualifier("replyThreadPool")
+    ThreadPoolTaskExecutor replyThreadPool;
 
     @GetMapping("/category/{id:\\d*}")
     public String category(@PathVariable(name = "id") Long id) {
@@ -38,6 +64,8 @@ public class PostController extends BaseController {
 
     @GetMapping("/post/{id:\\d*}")
     public String post(@PathVariable(name = "id") Long id) {
+
+
 
         PostVo vo = postService.selectOnePost(new QueryWrapper<Post>().eq("p.id", id));
         Assert.notNull(vo, "文章已被删除");
@@ -55,20 +83,33 @@ public class PostController extends BaseController {
         return "post/detail";
     }
 
+    @Transactional
     @GetMapping("/post/edit")
     public String edit() {
         String id = req.getParameter("id");
+        String token = "";
 
-        if (!StringUtils.isEmpty(id)) {
-            Post post = postService.getById(id);
-            Assert.isTrue(post != null, "该帖子已经被删除");
-            Assert.isTrue(post.getUserId().longValue() == getProfileId(), "没有权限操作此文章");
-            req.setAttribute("post", post);
+        //获取分布式锁
+        try {
+            token = redisLockService.lock(id.toString(), 1000, 11000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if(token!=null) {
+                if (!StringUtils.isEmpty(id)) {
+                    Post post = postService.getById(id);
+                    Assert.isTrue(post != null, "该帖子已经被删除");
+                    Assert.isTrue(post.getUserId().longValue() == getProfileId(), "没有权限操作此文章");
+                    req.setAttribute("post", post);
+                }
+
+                req.setAttribute("categories", categoryService.list());
+                Boolean unlock = redisLockService.unlock(id.toString(), token);
+                if(!unlock) {
+                    log.error("分布式锁释放失败");
+                }
+            }
         }
-
-        req.setAttribute("categories", categoryService.list());
-
-
         return "/post/edit";
     }
 
@@ -99,14 +140,9 @@ public class PostController extends BaseController {
             post.setLevel(0);
             post.setRecommend(false);
 
-
             post.setViewCount(0);
             post.setVoteDown(0);
             post.setVoteUp(0);
-
-
-
-
 
         } else {
             //编辑博客
@@ -117,6 +153,8 @@ public class PostController extends BaseController {
 
         postService.saveOrUpdate(post);
 
+        //System.out.println(1/0);
+
         // 通知消息给mq，告知更新或添加
         amqpTemplate.convertAndSend(RabbitMqConfig.ES_EXCHANGE, RabbitMqConfig.ES_BIND_KEY,
                 new PostMqIndexMessage(post.getId(), PostMqIndexMessage.CREATE_OR_UPDATE));
@@ -125,30 +163,29 @@ public class PostController extends BaseController {
     }
 
 
+    @Transactional
     @ResponseBody
     @PostMapping("/post/delete")
     public Result delete(Long id) {
 
-        Post post = postService.getById(id);
+        DeleteThread thread;
+        Result result = null;
+        try {
+            thread = new DeleteThread(id, getProfileId());
+            Future<Result> future = deleteThreadPool.submit(thread);
+            result = future.get();
 
-        Assert.notNull(post, "该帖子已经被删除");
-        Assert.isTrue(post.getUserId().longValue() == getProfileId().longValue(), "无权限删除此文章");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+             return result.action("/user/home");
 
-        postService.removeById(id);
+        }
 
-        //删除相关消息、收藏等
-        userMessageService.removeByMap(MapUtil.of("post_id", id));
-        userCollectionService.removeByMap(MapUtil.of("post_id", id));
-
-        // 通知消息给mq，告知删除
-        amqpTemplate.convertAndSend(RabbitMqConfig.ES_EXCHANGE, RabbitMqConfig.ES_BIND_KEY,
-                new PostMqIndexMessage(post.getId(), PostMqIndexMessage.REMOVE));
-
-
-        return Result.success().action("/user/home");
     }
 
 
+    @Transactional
     @ResponseBody
     @PostMapping("/post/reply")
     public Result reply(Long postId, String content) {
@@ -156,84 +193,34 @@ public class PostController extends BaseController {
         Assert.notNull(postId, "找不到对应的博客");
         Assert.hasLength(content, "评论内容不能为空");
 
-        Post post = postService.getById(postId);
-        Assert.isTrue(post != null, "该文章已被删除");
+        String token = "";
 
-        Date date = new Date();
+        Result result = null;
+        //获取分布式锁
+        try {
 
-        Comment comment = new Comment();
+            token = redisLockService.lock(postId.toString(), 1000, 11000);
 
-        comment.setPostId(postId);
-        comment.setContent(content);
+            ReplyThread replyThread = new ReplyThread(postId, getProfileId(),content);
 
-        comment.setUserId(getProfileId());
+            Future<Result> resultFuture = replyThreadPool.submit(replyThread);
 
-        comment.setCreated(date);
-        comment.setModified(date);
-
-        comment.setLevel(0);
-        comment.setVoteDown(0);
-        comment.setVoteUp(0);
-
-        commentService.save(comment);
-
-        //博客评论数量+1
-        post.setCommentCount(post.getCommentCount() + 1);
-        postService.updateById(post);
-
-        //本周热议数量+1
-
-        postService.incrCommentCountAndUnionForWeekRank(postId, true);
-
-        //通知作者，博客被评论 (自己评论自己不通知)
-        if (comment.getUserId() != post.getUserId()) {
-            UserMessage message = new UserMessage();
-
-            message.setPostId(postId);
-            ///
-            message.setCommentId(comment.getId());
-
-            message.setFromUserId(getProfileId());
-            message.setToUserId(post.getUserId());
-
-            message.setType(1);
-            message.setContent(content);
-            message.setCreated(date);
-            message.setModified(date);
-
-            message.setStatus(0);
-
-            userMessageService.save(message);
-            webSocketService.sendMessCountToUser(message.getToUserId());
-
-        }
-
-        // 通知@的人
-        if (content.startsWith("@")) {
-            String username = content.substring(1, content.indexOf(" "));
-
-            User user = userService.getOne(new QueryWrapper<User>().eq("name", username));
-            if (user != null) {
-                UserMessage message = new UserMessage();
-                message.setPostId(postId);
-                message.setCommentId(comment.getId());
-                message.setFromUserId(getProfileId());
-                message.setToUserId(user.getId());
-                message.setType(2);
-                message.setContent(content);
-                message.setCreated(new Date());
-                message.setStatus(0);
-                userMessageService.save(message);
+            result = resultFuture.get();
 
 
-                // 即时通知被@的用户
-                //webSocketService.sendMessCountToUser(message.getToUserId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+
+            if(token!=null) {
+                Boolean unlock = redisLockService.unlock(postId.toString(), token);
+                if(!unlock) {
+                    log.error("分布式锁释放失败");
+                }
             }
-
         }
 
-
-        return Result.success().action("/post/" + postId);
+        return result.action("/post/" + postId);
     }
 
     @ResponseBody

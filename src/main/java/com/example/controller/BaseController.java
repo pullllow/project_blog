@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.concurrent.ThreadFactory;
 
 /*
  *  @author changqi
@@ -53,6 +54,8 @@ public class BaseController {
 
     @Autowired
     ChatService chatService;
+
+
 
     public Page getPage(){
         //当前页码

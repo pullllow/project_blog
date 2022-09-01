@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 /**
  * @author Chang Qi
  * @date 2022/4/28 10:40
- * @description 符合jpa命名规范的接口
+ * @description 符合jpa命名规范的接口 实现ElasticsearchRepository
  * @Version V1.0
  */
 

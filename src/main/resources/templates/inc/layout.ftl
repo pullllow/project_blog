@@ -73,7 +73,7 @@
                 stompClient = Stomp.over(socket);
                 stompClient.connect({}, function (frame) {
                     stompClient.subscribe('/user/' + ${profile.id} + '/messCount', function (res) {
-                        console.log(res);
+                        // console.log(res);
                         // 弹窗
                         showTips(res.body);
                     })
